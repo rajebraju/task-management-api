@@ -1,66 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Task Management API
+-------------------
+A RESTful API for managing tasks, developed using Laravel.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Features:
+Create a new task,
+Retrieve a list of tasks,
+Retrieve a sigle tasks,
+Mark a task as completed,
+Delete a task,
 
-## About Laravel
+Requirements:
+Before setting up the project, ensure you have the following installed:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+PHP 8.1 or higher
+Composer
+Laravel 10.x
+MySQL
+Node.js and npm (for frontend or optional assets)
+Postman or Curl for API testing
+Installation
+Clone the repository:
+git clone https://github.com/your-username/task-management-api.git
+cd task-management-api
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+composer install
+Create a .env file:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+cp .env.example .env
+Set up your database in the .env file:
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_management
+DB_USERNAME=root
+DB_PASSWORD=your_password
+Generate the application key:
 
-## Learning Laravel
+php artisan key:generate
+Run database migrations:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+php artisan migrate
+Start the development server:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+php artisan serve
+Your API is now running at http://127.0.0.1:8000.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Seeding a Test User
+Create a seeder to add a test user:
 
-## Laravel Sponsors
+php artisan make:seeder UserSeeder
+Edit the UserSeeder class in database/seeders/UserSeeder.php to include the following code:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+public function run()
+{
+    $user = \App\Models\User::create([
+        'name' => 'Test User',
+        'email' => 'testuser@example.com',
+        'password' => bcrypt('password'),
+    ]);
 
-### Premium Partners
+    $token = $user->createToken('TestToken')->plainTextToken;
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    $this->command->info("Test user created with email: testuser@example.com");
+    $this->command->info("Token: $token");
+}
+Seed the user:
 
-## Contributing
+php artisan db:seed --class=UserSeeder
+Note the token output in the terminal (e.g., eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsInR...)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Testing the API Endpoints
+Using Postman
+Open Postman and create a new request.
+Add the Authorization header:
+Key: Authorization
+Value: Bearer <your_generated_token> (replace <your_generated_token> with the token from the seeder output).
+Test any endpoint, e.g., creating a task:
+Method: POST
+URL: http://127.0.0.1:8000/api/tasks
+Headers: Add the Authorization header as described above.
+Body (JSON): {
+    "title": "Sample Task",
+    "description": "This is a sample task."
+}
 
-## Code of Conduct
+curl -X POST http://127.0.0.1:8000/api/tasks \
+-H "Authorization: Bearer <your_generated_token>" \
+-H "Content-Type: application/json" \
+-d '{"title":"Sample Task", "description":"This is a sample task."}'
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Common Endpoints
+Here are some available endpoints you can test:
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+POST /api/tasks - Create a new task,
+GET /api/tasks - Retrieve all tasks,
+GET /api/tasks/{id} - Retrieve a single task,
+PUT /api/tasks/{id} - Update a task,
+DELETE /api/tasks/{id} - Delete a task,
